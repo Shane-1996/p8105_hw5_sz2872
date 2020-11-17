@@ -115,5 +115,49 @@ city_prop_test %>%
 
 
 
+# Problem 2
+
+## get name 
+
+```{r}
+file_name = list.files("data/study_data")
+```
+
+## import data
+
+```{r}
+data = 
+  map(.x = str_c("data/study_data/", file_name),~read_csv(.x)) %>% 
+  bind_rows() %>% 
+  mutate(name = file_name) %>% 
+  select(name, everything()) %>% 
+  separate(name, c("arm", "id"), remove = FALSE) %>% 
+  pivot_longer(
+    "week_1":"week_8", 
+    names_to = "week", 
+    values_to = "observation", 
+    names_prefix = "week_"
+  ) %>% 
+  mutate(
+    id = as.numeric(id),
+    week = as.numeric(week)   
+  )
+``` 
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -146,6 +146,19 @@ data =
   )
 ``` 
 
+## make plot
+
+```{r}
+data %>% 
+  ggplot(aes(x = week, y = observation, group = group, col = arm))+
+  geom_line() +
+  labs(
+    title = "Observations for each arm over Time",
+    x = "Week",
+    y = "Observation",
+    caption = "Data from a longitudinal study") +
+  theme(legend.position = "bottom")
+```
 
 
 

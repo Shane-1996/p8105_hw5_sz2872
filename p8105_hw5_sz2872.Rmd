@@ -36,6 +36,8 @@ scale_fill_discrete = scale_fill_viridis_d
 
 # Problem 1
 
+## import data
+
 ```{r}
 homicide_df = 
   read_csv("data/homicide-data.csv") %>% 
@@ -51,6 +53,8 @@ homicide_df =
   filter(city_state != "Tulsa_AL")
 ```
 
+## aggregate origin data
+
 ```{r}
 homicide_sum = 
   homicide_df %>% 
@@ -61,6 +65,8 @@ homicide_sum =
   )
 ```
 
+## test on one data
+
 ```{r}
 prop.test(
   homicide_sum %>% filter(city_state == "Baltimore_MD") %>% pull(hom_unsolved), 
@@ -70,6 +76,8 @@ prop.test(
   select(estimate, conf.low, conf.high) %>% 
   knitr::kable()
 ```
+
+## write function
 
 ```{r}
 prop_test = function(x){
@@ -84,6 +92,8 @@ prop_test = function(x){
 }
 ```
 
+## function applied
+
 ```{r}
 city_prop_test = 
   map(.x = homicide_sum$city_state, .f = ~prop_test(.x)) %>% 
@@ -91,6 +101,8 @@ city_prop_test =
   mutate(city_state = homicide_sum$city_state) %>% 
   select(city_state, everything())
 ```
+
+## making plot
 
 ```{r}
 city_prop_test %>% 

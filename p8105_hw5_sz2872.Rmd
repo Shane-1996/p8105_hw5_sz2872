@@ -31,3 +31,77 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
+
+
+
+# Problem 1
+
+```{r}
+homicide_df = 
+  read_csv("data/homicide-data.csv") %>% 
+  mutate(
+    city_state = str_c(city, state, sep = "_"),
+    resolved = case_when(
+      disposition == "Closed without arrest" ~ "unsolved",
+      disposition == "Open/No arrest"        ~ "unsolved",
+      disposition == "Closed by arrest"      ~ "solved",
+    )
+  ) %>% 
+  select(city_state, resolved) %>% 
+  filter(city_state != "Tulsa_AL")
+```
+
+```{r}
+homicide_sum = 
+  homicide_df %>% 
+  group_by(city_state) %>% 
+  summarize(
+    hom_total = n(),
+    hom_unsolved = sum(resolved == "unsolved")
+  )
+```
+
+```{r}
+prop.test(
+  homicide_sum %>% filter(city_state == "Baltimore_MD") %>% pull(hom_unsolved), 
+  homicide_sum %>% filter(city_state == "Baltimore_MD") %>% pull(hom_total)
+) %>% 
+  broom::tidy() %>% 
+  select(estimate, conf.low, conf.high) %>% 
+  knitr::kable()
+```
+
+```{r}
+prop_test = function(x){
+  
+  test = prop.test(
+    homicide_sum %>% filter(city_state == x) %>% pull(hom_unsolved), 
+    homicide_sum %>% filter(city_state == x) %>% pull(hom_total)
+  ) %>% 
+  broom::tidy() %>% 
+  select(estimate, conf.low, conf.high) 
+  
+}
+```
+
+```{r}
+city_prop_test = 
+  map(.x = homicide_sum$city_state, .f = ~prop_test(.x)) %>% 
+  bind_rows() %>% 
+  mutate(city_state = homicide_sum$city_state) %>% 
+  select(city_state, everything())
+```
+
+```{r}
+city_prop_test %>% 
+  mutate(city_state = fct_reorder(city_state, estimate)) %>% 
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+
+
+
+

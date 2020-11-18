@@ -192,14 +192,33 @@ sim_n_sd(mu = 0)
 ## mu = 0 for 5000 times
 
 ```{r}
-output = vector("list", 5000)
+sim_results = 
+  rerun(5000, sim_n_sd(mu = 0)) %>% 
+  bind_rows()
 
-for (i in 1:5000) {
-  output[[i]] = sim_n_sd(mu = 0)
-}
-
-sim_results = bind_rows(output)
+sim_results %>% filter(p.value < 0.05)
 ```
+
+## mu = 1:6
+
+```{r}
+mu_list = 
+  list(
+    "mu_1" = 1, 
+    "mu_2" = 2, 
+    "mu_3" = 3, 
+    "mu_4" = 4,
+    "mu_5" = 5,
+    "mu_6" = 6)
+
+output = vector("list", length = 6)
+
+for (i in 1:4) {
+  output[[i]] = rerun(5000, sim_n_sd(mu = mu_list[[i]])) %>% 
+    bind_rows
+}
+```
+
 
   
 

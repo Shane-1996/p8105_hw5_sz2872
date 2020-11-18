@@ -153,7 +153,8 @@ data =
 ## make plot
 
 ```{r}
-data %>% 
+plot_arm = 
+  data %>% 
   ggplot(aes(x = week, y = observation, group = group, col = arm))+
   geom_line() +
   labs(
@@ -162,7 +163,22 @@ data %>%
     y = "Observation",
     caption = "Data from a longitudinal study") +
   theme(legend.position = "bottom")
+
+plot_group = 
+  data %>% 
+  ggplot(aes(x = week, y = observation, group = group, col = group))+
+  geom_line() +
+  labs(
+    title = "Observations for each group over Time",
+    x = "Week",
+    y = "Observation",
+    caption = "Data from a longitudinal study") +
+  theme(legend.position = "bottom")
+
+plot_arm + plot_group
 ```
+
+From the plot, it is obvious that experiment group has higher position as whole, compared to control group. The difference is getting clear as the study time being long. The differences also show up for each individual con & exp groups. 
 
 
 
@@ -202,21 +218,7 @@ sim_results %>% filter(p.value < 0.05)
 ## mu = 1:6
 
 ```{r}
-mu_list = 
-  list(
-    "mu_1" = 1, 
-    "mu_2" = 2, 
-    "mu_3" = 3, 
-    "mu_4" = 4,
-    "mu_5" = 5,
-    "mu_6" = 6)
 
-output = vector("list", length = 6)
-
-for (i in 1:4) {
-  output[[i]] = rerun(5000, sim_n_sd(mu = mu_list[[i]])) %>% 
-    bind_rows
-}
 ```
 
 

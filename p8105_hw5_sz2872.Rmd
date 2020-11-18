@@ -32,6 +32,10 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
+```{r}
+set.seed(1)
+```
+
 
 
 # Problem 1
@@ -161,6 +165,41 @@ data %>%
 ```
 
 
+
+# Problem 3
+
+## write function
+
+```{r}
+sim_n_sd = function(n = 30, mu, sigma = 5) {
+  
+  sim_data = tibble(
+    x = rnorm(n = n, mean = mu, sd = sigma),
+  )
+  
+  sim_output = 
+    sim_data %>% 
+    t.test(mu = mu) %>% 
+    broom::tidy() %>% 
+    select(estimate, p.value)
+  
+  sim_output
+}
+
+sim_n_sd(mu = 0)
+```
+
+## mu = 0 for 5000 times
+
+```{r}
+output = vector("list", 5000)
+
+for (i in 1:5000) {
+  output[[i]] = sim_n_sd(mu = 0)
+}
+
+sim_results = bind_rows(output)
+```
 
   
 
